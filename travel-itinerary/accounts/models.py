@@ -3,21 +3,26 @@ from django.db import models
 
 
 class User(AbstractUser):
-    ROLE_CHOICES = [
-        ("traveler", "Traveler"),
-        ("admin", "Admin"),
-    ]
+    """Custom user model for the travel API."""
 
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="traveler")
+    class RoleChoices(models.TextChoices):
+        TRAVELER = "traveler", "Traveler"
+        ADMIN = "admin", "Admin"
+
+    role = models.CharField(
+        max_length=20,
+        choices=RoleChoices.choices,
+        default=RoleChoices.TRAVELER,
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ["username"]
         indexes = [
-            models.Index(fields=["username"]),
-            models.Index(fields=["email"]),
             models.Index(fields=["role"]),
+            models.Index(fields=["email"]),
         ]
 
     def __str__(self):
